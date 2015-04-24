@@ -9,6 +9,8 @@ function Sprite(G){
  				vel: {X: 2, Y: 2},
  				init: null,
  				image: null,
+ 				name: obj,
+ 				scene: null,
 
  				init: function(){
 
@@ -23,22 +25,63 @@ function Sprite(G){
  					}
  				},
 
- 				on: function(action, callback) {
- 					switch (action){
- 						case 'hit.top':
+ 				intersect: function(obj) {
+ 					if (obj.X + obj.W >= this.X &&
+ 						obj.X <= this.X + this.W &&
+ 						obj.Y + obj.H >= this.Y  &&
+ 						obj.Y <= this.Y + this.H) {
+ 						return true;
+ 					} else {
+ 						return false;
+ 					}
+ 				},
+
+ 				collision: function(action, callback) {
+
+ 					var action = action.split(',');
+
  							for (var i = 0; i < G.stageScene[G.sceneActive].sprite.length; i++) {
+ 								var hit = false;
  								var obj = G.stageScene[G.sceneActive].sprite[i];
  								if (obj != this) {
-									if (this.Y <= obj.Y + obj.H && obj.X < this.X + this.W && this.X < obj.X + obj.W) {
-										callback(obj);
+
+ 									//hit top
+									if (action.indexOf('hit.top') >= 0 &&
+										this.intersect(obj) &&
+										obj.Y < this.Y &&
+										obj.vel.Y > 0) {
+										hit = true;
 									};
+
+									// // hit bottom
+									if (action.indexOf('hit.bottom') >= 0 &&
+										this.intersect(obj) &&
+										this.Y + this.H > obj.Y &&
+										obj.vel.Y < 0) {
+										hit = true;
+									};
+
+									// hit left
+									if (action.indexOf('hit.left') >= 0 &&
+										this.intersect(obj) &&
+										obj.X < this.X && 
+										obj.vel.X > 0) {
+										hit = true;
+									};
+
+									if (action.indexOf('hit.right') >= 0 &&
+										this.intersect(obj) &&
+										this.X + this.W > obj.X &&
+										obj.vel.X < 0){
+										hit = true;
+									}
+
+									if (hit){
+										callback(obj);
+									}
  								};
 							};
- 							break;
- 						case 'hit.bottom':
  							
- 							break;
- 					}
  				},
 
  				setting: function(){
@@ -48,6 +91,10 @@ function Sprite(G){
  					this.H = setup? setup.H || this.H : this.H;
  					this.vel = setup? setup.vel || this.vel : this.vel;
  					this.image = setup? G.img[setup.image] || this.image : this.image;
+
+ 				},
+
+ 				destroy: function(){
 
  				}
  			}

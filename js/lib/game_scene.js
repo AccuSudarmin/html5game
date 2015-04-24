@@ -2,6 +2,8 @@ function Scene(G){
 	G.stageScene = {};
 
 	var sceneObejct = function(){
+		var name = null;
+		
 		this.sprite = new Array();
 
 		this.add = function(object) {

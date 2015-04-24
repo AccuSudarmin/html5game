@@ -63,14 +63,22 @@ function Game () {
 	};
 
 	G.controller = function () {
+		var keyName = {
+  			32: 'space',
+  			37: 'left',
+  			38: 'up',
+  			39: 'right',
+  			40: 'down'
+		}
+
 		G.keystate = {};
 
 		G.canvas.addEventListener("keydown", function(e){
-			G.keystate[e.keyCode] = true;
+			G.keystate[keyName[e.keyCode]] = true;
 		})
 
 		G.canvas.addEventListener("keyup", function(e){
-			delete G.keystate[e.keyCode];
+			delete G.keystate[keyName[e.keyCode]];
 		})
 
 		return this;
