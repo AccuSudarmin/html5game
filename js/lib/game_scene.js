@@ -4,10 +4,13 @@ function Scene(G){
 	var sceneObejct = function(){
 		var name = null;
 		
-		this.sprite = new Array();
+		this.sprite = {};
 
 		this.add = function(object) {
-			this.sprite.push(object);
+			var nama = (Math.floor((Math.random() * 10000) + 1));
+			this.sprite[nama] = object;
+
+			this.sprite[nama].sceneIndex = nama;
 		};
 
 		this.draw = function(){
@@ -15,8 +18,8 @@ function Scene(G){
 			G.ctx.save();
 			G.ctx.fillStyle = '#bebebe';
 	
-			for (var i = 0; i < this.sprite.length; i++) {
-				this.sprite[i].setting();
+			for (var key in this.sprite){
+				this.sprite[key].setting();
 			};
 
 			G.ctx.restore();
@@ -27,8 +30,8 @@ function Scene(G){
 			G.ctx.save();
 			G.ctx.fillStyle = '#bebebe';
 	
-			for (var i = 0; i < this.sprite.length; i++) {
-				this.sprite[i].draw();
+			for (var key in this.sprite){
+				this.sprite[key].draw();
 			};
 
 			G.ctx.restore();

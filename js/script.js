@@ -1,15 +1,12 @@
 var G = new Game()
-				.setup('canvas', {
-					w: 400 ,
-					h: 400
-				})
+				.setup('canvas', {W: 400, H:400})
 				.module('Sprite,Scene')
 				.controller();
 
 G.Sprite.extend('player', {
 	init: function(){
-		if (G.keystate.right) this.X += this.vel.X;
-		if (G.keystate.left) this.X += -this.vel.X;
+		if (G.keystate.rightArrow) this.X += this.vel.X;
+		if (G.keystate.leftArrow) this.X += -this.vel.X;
 
 		if (G.keystate.space) {
 			this.jump = true;
@@ -19,26 +16,35 @@ G.Sprite.extend('player', {
 			else this.Y += 2;
 		}
 
-		this.collision('hit.right,hit.left', function(obj){
-			obj.vel.X *= -1;
+		var self = this;
+
+		this.collision('hit.left,hit.right', function(obj){
+			if (obj.name == 'enemy') {
+				obj.vel.X *= -1;
+			};
 		});
 
-		this.collision('hit.top', function(obj){
-			obj.vel.Y *= -1;
+		this.collision('hit.top,hit.bottom', function(obj){
+			if (obj.name == 'enemy') {
+				obj.vel.Y *= -1;
+			};
 		});
 	}
 });
 
 G.Sprite.extend('enemy', {
 	init: function(){
+
+		if (this.Y > G.canvas.height || 
+			this.Y + this.H < 0 || 
+			this.X > G.canvas.width || 
+			this.X +this.W <0) {
+			this.X =100;
+			this.Y = 100;
+		};
+
 		this.Y += this.vel.Y;
 		this.X += this.vel.X;
-
-		if (this.Y + this.H > G.canvas.height || this.Y < 0) {
-			var offset = this.vel.Y < 0 ? 0 - this.Y : G.canvas.height - (this.Y+this.H);
-			this.Y += 2*offset;
-			this.vel.Y *= -1;
-		}
 
 		if (this.X + this.W > G.canvas.width || this.X < 0) {
 			this.vel.X *= -1;
@@ -55,20 +61,33 @@ G.Sprite.extend('enemy', {
 
 G.Scene('level1', function(stage){
 	stage.add(new G.player({
-		Y: 390,
+		Y: 350,
 		W: 50,
-		H: 10,
+		H: 50,
+		vel: { Y:8, X:8 }
+	}));
+
+	stage.add(new G.player({
+		Y: 0,
+		W: 50,
+		H: 50,
 		vel: { Y:8, X:8 }
 	}));
 
 	stage.add(new G.enemy({ 
-		X: 0,
-		W: 10, 
-		H: 10, 
-		vel: { Y: 4, X: 4 }
+		X: 380,
+		Y: 0,
+		W: 20, 
+		H: 20, 
+		vel: { Y: 2, X: -2 }
 	}));
-})
+});
 
-G.loadTexture([{imgName: 'motor', imgLoc: 'img/motor.png'}], function(){
+sheet = [
+	{imgName: 'motor', imgLoc: 'img/motor.png'},
+	{imgName: 'car', imgLoc: 'img/car.png'}
+];
+
+G.loadSheet(sheet, function(){
 	G.startScene('level1');
 })

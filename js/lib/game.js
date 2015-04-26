@@ -16,8 +16,11 @@ function Game () {
 		}
 
 		G.canvas.setAttribute('tabindex', '0');
-		G.canvas.width = setting.w || 400;
-		G.canvas.height = setting.h || 400;
+		G.canvas.width = setting.W || document.body.clientWidth;
+		G.canvas.height = setting.H || document.body.clientHeight;
+		G.canvas.style.width = G.canvas.width + "px";
+		G.canvas.style.height = G.canvas.height + "px";
+		G.canvas.focus();
 		G.ctx = G.canvas.getContext("2d");
 		
 		return this;
@@ -65,10 +68,10 @@ function Game () {
 	G.controller = function () {
 		var keyName = {
   			32: 'space',
-  			37: 'left',
-  			38: 'up',
-  			39: 'right',
-  			40: 'down'
+  			37: 'leftArrow',
+  			38: 'upArrow',
+  			39: 'rightArrow',
+  			40: 'downArrow'
 		}
 
 		G.keystate = {};
@@ -89,13 +92,19 @@ function Game () {
 		G.stageScene[scene].draw();
 	}
 
-	G.loadTexture = function(imgArray, callback) {
+	G.loadSheet = function(imgArray, callback) {
+		var hasLoad = 0;
 		G.img = {};
-		G.img[imgArray[0].imgName] = new Image();
-		G.img[imgArray[0].imgName].src = imgArray[0].imgLoc;
-		G.img[imgArray[0].imgName].onload = function(){
-			callback.call();
-		}
+		for (var i = 0; i < imgArray.length; i++) {
+			G.img[imgArray[i].imgName] = new Image();
+			G.img[imgArray[i].imgName].src = imgArray[i].imgLoc;
+			G.img[imgArray[i].imgName].onload = function(){
+				hasLoad += 1;
+				if (hasLoad == imgArray.length) {
+					callback.call();
+				};
+			}
+		};
 	}
 
 	return G;
